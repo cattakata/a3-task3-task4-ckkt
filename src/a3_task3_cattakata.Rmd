@@ -109,6 +109,14 @@ purple_urchins <- urchins_clean %>%
 
 ```{r}
 sum_purp_urchins <- purple_urchins %>% 
-  count(site, year)
+  count(site_full, year)
+```
+
+#### Exploratory graph of purple urchin summary 
+
+```{r}
+ggplot(data = sum_purp_urchins, aes(x = year, color = site_full)) + 
+  geom_histogram(bins = 30, alpha = 0.5, show.legend = FALSE) + 
+  facet_wrap(~site_full)
 ```
 
