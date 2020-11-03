@@ -1,0 +1,114 @@
+---
+title: "Assignment 3, Task 3"
+author: "Catherine Takata"
+date: "11/2/2020"
+output: html_document
+---
+
+```{r setup, echo = TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(kableExtra)
+```
+
+#### Read in data set for local use 
+
+```{r}
+urchins <- read.csv(here("data", "urchins.csv"))
+```
+
+## Section 1
+- Use a faceted histogram and boxplot to initially explore data. These function will help compare the distribution of sizes of purple and red urchins.  
+- First, to practice "tidy" methods, convert the column names to lowercase using the clean_names() of the janitor package. 
+
+```{r, warning=FALSE}
+urchins_clean <- urchins %>% 
+  clean_names()
+```
+
+
+#### Histogram 
+- Using the "tidy" dataset, we can use geom_histogram to create a histogram of the common name and size. 
+- Using facet_wrap() will visually create a seperate group based on the two different common names. 
+
+```{r, warning=FALSE}
+ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
+  geom_histogram(alpha = 0.5, show.legend = FALSE) + 
+  facet_wrap(~common_name) +
+  labs(title = "Initial Distribution of Purple and Red Urchin Based on Size",
+       subtitle = "Takata, 2020",
+       x = "Urchin Diameter (cm)",
+       y = "Number of Urchins") +
+  scale_fill_manual(values = c("mediumpurple4", "firebrick3")) +
+  theme_light()
+```
+
+#### Boxplot 
+- Using geom_boxplot() we can create a boxplot to visually represent the inital dataset. 
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(data = urchins_clean, aes(x = common_name, y = size, fill = common_name)) +
+  geom_boxplot(alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Initial Distribution of Purple and Red Urchins Based on Size",
+       subtitle = "Takata, 2020",
+       x = "Common Name",
+       y = "Urchin Diameter (cm)") +
+  scale_fill_manual(values = c("mediumpurple4", "firebrick3"))
+```
+
+#### Statistics Table 
+- Create a summary table that contains mean, median, sd, and sample size for purple + red urchins 
+
+```{r}
+urchin_sum_stats <- urchins_clean %>% 
+  group_by(common_name) %>% 
+  summarize(mean = mean(size, na.rm = TRUE),
+            median = median(size, na.rm = TRUE),
+            sd = sd(size, na.rm = TRUE),
+            sample_size = n(),
+            .groups = 'drop')
+
+kbl(urchin_sum_stats) %>% 
+  kable_styling()
+
+urchin_sum_stats
+```
+
+####  Add 2 - 3 sentences briefly describing your overall takeaways about how the size (distribution, central tendency, spread, etc.) compare between the two species of urchins (again, here we are ignoring site and treatment as a variable). Help to contextualize any differences you observe - for example, what is the actual and % difference in mean urchin diameter between the species? 
+
+
+## Section 2
+- Explore purple urchin counts by site and year 
+
+#### Convert data to DATE class, add columns to existing dataset with wrangled data 
+
+```{r}
+
+urchins_clean <- urchins_clean %>% 
+  mutate(date = mdy(date))
+
+class(urchins_clean$date)
+
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin") %>% 
+  mutate(year = year(date)) %>%
+  mutate(site_full = case_when(
+    site %in% "NAPL" ~ "Naples Reef",
+    site %in% "AQUE" ~ "Arroyo Quemado Reef",
+    site %in% "CARP" ~ "Carpinteria Reef",
+    site %in% "MOHK" ~ "Mohawk Reef",
+    site %in% "IVEE" ~ "Isla Vista Reef"
+  )) 
+
+```
+
+#### Summary table containing the total number of purple urchins by site + year 
+
+```{r}
+sum_purp_urchins <- purple_urchins %>% 
+  count(site, year)
+```
+
