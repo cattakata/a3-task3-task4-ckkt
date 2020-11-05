@@ -5,26 +5,46 @@ date: "11/5/2020"
 output: html_document
 ---
 
+Summary: Compare the mean size of purple urchins in CONTROL (no giant kelp removal) or ANNUAL (annual kelp removal) sections of Naples Reef in January 2010. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
 ```
 
-## R Markdown
+#### Read in data set 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+urchins <- read.csv(here("data", "urchins.csv"))
 ```
 
-## Including Plots
+#### Wrangle data - clean, format dates, etc - before proceeding with analysis 
 
-You can also embed plots, for example:
+```{r}
+# Use clean_names() to change column names to lower snake case - will ease data analaysis and calling columns 
+urchins_clean <- urchins %>% 
+  clean_names()
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# in a pipe sequence, change the inital date into a different format and mutate() it to add this new formatted column to the data set 
+# then mutate() a new column for year, in order to easily filter data 
+urchins_clean <- urchins_clean %>% 
+  mutate(date_formatted = mdy(date)) %>% 
+  mutate(year = year(date_formatted))
+
+# assign the data_formatted as a "Date" class 
+class(urchins_clean$date_formatted)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#### Begin to wrangle data, only include Naples Reef observations for purple urchins observed in January 2010 
+
+```{r}
+naples_purp <- urchins_clean %>% 
+  filter(site == "NAPL",
+         common_name == "Purple Urchin",
+         year == 2010)
+```
+
