@@ -115,8 +115,13 @@ sum_purp_urchins <- purple_urchins %>%
 #### Exploratory graph of purple urchin summary 
 
 ```{r}
-ggplot(data = sum_purp_urchins, aes(x = year, color = site_full)) + 
-  geom_histogram(bins = 30, alpha = 0.5, show.legend = FALSE) + 
-  facet_wrap(~site_full)
+ggplot(data = sum_purp_urchins, aes(x = year, y = n, fill = site_full)) + 
+  geom_col(show.legend = FALSE) +
+  #geom_histogram(bins = 30, alpha = 0.5, show.legend = FALSE) + 
+  facet_wrap(~site_full) + 
+  labs(title = "Mean Annual Purple Urchin Population Per Site",
+       subtitle = "Takata 2020",
+       x = "Year",
+       y = "Number of Urchins")
 ```
 
