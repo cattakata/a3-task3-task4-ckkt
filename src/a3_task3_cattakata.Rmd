@@ -20,11 +20,11 @@ library(kableExtra)
 urchins <- read.csv(here("data", "urchins.csv"))
 ```
 
-## Section 1
-- Use a faceted histogram and boxplot to initially explore data. These function will help compare the distribution of sizes of purple and red urchins.  
+### Section 1
+- Use a faceted histogram() and boxplot() to initially explore data through visualization. These function will help compare the distribution of sizes of purple and red urchins.  
 - First, to practice "tidy" methods, convert the column names to lowercase using the clean_names() of the janitor package. 
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 urchins_clean <- urchins %>% 
   clean_names()
 ```
@@ -32,11 +32,12 @@ urchins_clean <- urchins %>%
 
 #### Histogram 
 - Using the "tidy" dataset, we can use geom_histogram to create a histogram of the common name and size. 
+- The histogram will visually represent the number of urchins in each category at each urchin diamter meausrement. 
 - Using facet_wrap() will visually create a seperate group based on the two different common names. 
 
 ```{r, warning=FALSE}
 ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
-  geom_histogram(alpha = 0.5, show.legend = FALSE) + 
+  geom_histogram(bins = 15, alpha = 0.5, show.legend = FALSE) + 
   facet_wrap(~common_name) +
   labs(title = "Initial Distribution of Purple and Red Urchin Based on Size",
        subtitle = "Takata, 2020",
@@ -45,10 +46,13 @@ ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   scale_fill_manual(values = c("mediumpurple4", "firebrick3")) +
   theme_light()
 ```
+#### The histogram vary in size/distribution/tendency for purple and red urchins. The purple urchins seem to be postivley skewed, with a tail forming toward the opposing side. means lower with a lower tendency 
+
+
 
 #### Boxplot 
 - Using geom_boxplot() we can create a boxplot to visually represent the inital dataset. 
-
+- Similar to the histogram, it will reveal the number of urchins per diameter. 
 ```{r, warning=FALSE, message=FALSE}
 ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   geom_boxplot(alpha = 0.5, show.legend = FALSE) +
@@ -60,6 +64,7 @@ ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   scale_fill_manual(values = c("mediumpurple4", "firebrick3"))
 ```
 
+### Section 1 ii.
 #### Statistics Table 
 - Create a summary table that contains mean, median, sd, and sample size for purple + red urchins 
 
@@ -74,17 +79,20 @@ urchin_sum_stats <- urchins_clean %>%
 
 kbl(urchin_sum_stats) %>% 
   kable_styling()
-
-urchin_sum_stats
 ```
 
-####  Add 2 - 3 sentences briefly describing your overall takeaways about how the size (distribution, central tendency, spread, etc.) compare between the two species of urchins (again, here we are ignoring site and treatment as a variable). Help to contextualize any differences you observe - for example, what is the actual and % difference in mean urchin diameter between the species? 
+### Section 1 iii. 
+The sample size is positively skewed distribution, central tendency, spread, etc.) compare between the two species of urchins (again, here we are ignoring site and treatment as a variable). Help to contextualize any differences you observe - for example, what is the actual and % difference in mean urchin diameter between the species? 
 
 
-## Section 2
+### Section 2 i. 
 - Explore purple urchin counts by site and year 
+- Convert data to DATE class, add columns to existing dataset with wrangled data 
 
-#### Convert data to DATE class, add columns to existing dataset with wrangled data 
+#### Next, create a stored subset of the urchins data called purple_urchins
+- Use filter() to isolate the observations for just the purple urchins 
+- Using mutate() add a new column based on the date class 
+- case_when() can be used as an "OR" statement, in this scenario, if "site" contains "an abbrviation"NAPL" OR "AQUE" OR "CARP" (etc), print it in a new mutated column. 
 
 ```{r}
 
@@ -106,7 +114,9 @@ purple_urchins <- urchins_clean %>%
 
 ```
 
+### Section 2 ii. 
 #### Summary table containing the total number of purple urchins by site + year 
+- Count() will provide the number of observations per parameter
 
 ```{r}
 sum_purp_urchins <- purple_urchins %>% 
@@ -114,6 +124,8 @@ sum_purp_urchins <- purple_urchins %>%
 ```
 
 #### Exploratory graph of purple urchin summary 
+- Geom_col() can be used to represent the number of urchins per year 
+- Like before, use facet_wrap() to distinguish between the five different sites 
 
 ```{r}
 ggplot(data = sum_purp_urchins, aes(x = year, y = n, fill = site_full)) + 
