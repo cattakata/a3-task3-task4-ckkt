@@ -50,12 +50,13 @@ ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
 - Using geom_boxplot() we can create a boxplot to visually represent the inital dataset. 
 
 ```{r, warning=FALSE, message=FALSE}
-ggplot(data = urchins_clean, aes(x = common_name, y = size, fill = common_name)) +
+ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   geom_boxplot(alpha = 0.5, show.legend = FALSE) +
+  facet_wrap(~common_name) +
   labs(title = "Initial Distribution of Purple and Red Urchins Based on Size",
        subtitle = "Takata, 2020",
-       x = "Common Name",
-       y = "Urchin Diameter (cm)") +
+       x = "Urchin Diameter (cm)",
+       y = "Number of Urchins") +
   scale_fill_manual(values = c("mediumpurple4", "firebrick3"))
 ```
 

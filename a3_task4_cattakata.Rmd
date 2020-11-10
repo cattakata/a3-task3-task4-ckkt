@@ -1,5 +1,5 @@
 ---
-title: "a3_task4_cat_takata"
+title: "Assignment 3, Task 4"
 author: "Catherine Takata"
 date: "11/5/2020"
 output: html_document
@@ -7,12 +7,14 @@ output: html_document
 
 Summary: Compare the mean size of purple urchins in CONTROL (no giant kelp removal) or ANNUAL (annual kelp removal) sections of Naples Reef in January 2010. 
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(janitor)
 library(lubridate)
+library(kableExtra)
 ```
 
 #### Read in data set 
@@ -21,20 +23,21 @@ library(lubridate)
 urchins <- read.csv(here("data", "urchins.csv"))
 ```
 
-#### Wrangle data - clean, format dates, etc - before proceeding with analysis 
+#### Clean, format dates, etc - before proceeding with analysis 
 
 ```{r}
-# Use clean_names() to change column names to lower snake case - will ease data analaysis and calling columns 
+# Convert the column names to lowercase using the clean_names() of the janitor package. - will ease data analysis and calling columns 
 urchins_clean <- urchins %>% 
   clean_names()
 
-# in a pipe sequence, change the inital date into a different format and mutate() it to add this new formatted column to the data set 
-# then mutate() a new column for year, in order to easily filter data 
+# in a pipe sequence, change the initial date into a different format and use mutate() function to add this new "formatted" column to the data set
+# then mutate() a new column for specifically for year, in order to easily filter data 
 urchins_clean <- urchins_clean %>% 
   mutate(date_formatted = mdy(date)) %>% 
-  mutate(year = year(date_formatted))
+  mutate(year = year(date_formatted)) %>% 
+  mutate(month = month(date_formatted))
 
-# assign the data_formatted as a "Date" class 
+# assign the data_formatted as a "Date" class - so R knows its a value 
 class(urchins_clean$date_formatted)
 
 ```
@@ -45,6 +48,59 @@ class(urchins_clean$date_formatted)
 naples_purp <- urchins_clean %>% 
   filter(site == "NAPL",
          common_name == "Purple Urchin",
-         year == 2010)
+         year == "2010",
+         month == "1")
 ```
+
+
+#### Create new sample in order to isolate the observations (CONTROL + ANNUAL) for the two samples you want to compare. Utilize exploratory data vix 
+
+```{r, message=FALSE, warning=FALSE}
+control_annual <- urchins_clean %>% 
+  filter(treatment %in% c("CONTROL", "ANNUAL"))
+
+ggplot(data = control_annual, aes(x = size)) + 
+  geom_histogram(bins = 15, alpha = 0.8, show.legend = FALSE) +
+  facet_wrap(~treatment) +
+  labs(title = "Urchin Size Distribution Based on Treatments",
+       subtitle = "Takata, 2020",
+       x = "Urchin Diameter (cm)",
+       y = "Number of Urchins") +
+  scale_fill_manual(values = c("mediumpurple4", "firebrick3")) +
+  theme_light()
+```
+
+#### Quantile-quantile plot to compare my sample to nornmality, looking to see how linear that relationship is 
+
+```{r}
+ggplot(data = control_annual, aes(sample = size)) + 
+  geom_qq() + 
+  facet_wrap(~treatment)
+```
+
+
+## 3C - Create a table of descriptive statistics for both groups 
+
+```{r, message=FALSE, warning=FALSE}
+treatment_sum <- naples_purp %>% 
+  group_by(treatment) %>% 
+  summarize(mean = mean(size, na.rm = TRUE),
+            sd = sd(size, na.rm = TRUE),
+            n = n())
+
+kbl(treatment_sum) %>% 
+  kable_styling()
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
