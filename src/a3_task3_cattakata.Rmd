@@ -46,7 +46,7 @@ ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   scale_fill_manual(values = c("mediumpurple4", "firebrick3")) +
   theme_light()
 ```
-#### The histogram vary in size/distribution/tendency for purple and red urchins. The purple urchins seem to be postivley skewed, with a tail forming toward the opposing side. means lower with a lower tendency 
+#### The histogram vary in size/distribution/tendency for purple and red urchins. The purple urchins seem to be postivley skewed, with a tail forming toward the opposing side. The means concentrate at the lower numbers indicating a lower tendency. The red urchins, on the other hands, have a more normal distribution, following a bell shape. Their values have a central tendency, hovering around the middle of the distribution with a larger SD and "squattier" distribution.
 
 
 
@@ -64,6 +64,9 @@ ggplot(data = urchins_clean, aes(x = size, fill = common_name)) +
   scale_fill_manual(values = c("mediumpurple4", "firebrick3"))
 ```
 
+#### The box plots show a more defined mean through the think mean lines. The purple urchins are distirbuted farther from the mean with outliers extending with higher value. The red urchins are similar, with outliers potentially skewing the distribution of data. 
+
+
 ### Section 1 ii.
 #### Statistics Table 
 - Create a summary table that contains mean, median, sd, and sample size for purple + red urchins 
@@ -80,9 +83,6 @@ urchin_sum_stats <- urchins_clean %>%
 kbl(urchin_sum_stats) %>% 
   kable_styling()
 ```
-
-### Section 1 iii. 
-The sample size is positively skewed distribution, central tendency, spread, etc.) compare between the two species of urchins (again, here we are ignoring site and treatment as a variable). Help to contextualize any differences you observe - for example, what is the actual and % difference in mean urchin diameter between the species? 
 
 
 ### Section 2 i. 
